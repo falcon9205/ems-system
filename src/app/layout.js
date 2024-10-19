@@ -1,5 +1,10 @@
 
+import { Quicksand } from "next/font/google";
 import "./globals.css";
+const roboto = Quicksand({
+  weight: "500",
+  subsets: ["latin"],
+});
 
 
 export const metadata = {
@@ -10,7 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
+      <body className={`bg-black ${roboto.className}`}
       >
         {children}
       </body>
