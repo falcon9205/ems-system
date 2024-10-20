@@ -1,11 +1,20 @@
 "use client";
-import React, { useState } from "react";
-
+import useLogin from "@/store/login";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import "./admin.css"
 const Page = () => {
+  const router= useRouter()
   const [taskTitle, setTaskTitle] = useState("");
   const [state, setState] = useState("");
   const [deadline, setDeadline] = useState("");
   const [description, setDescription] = useState("");
+  const login = useLogin((state) => state.login);
+  const setLoginCredential = useLogin((state) => state.setLoginCredential);
+  useEffect(()=>{
+    if(login === "0")
+      router.push("/")
+  },[login])
   const handleSubmit = (e) => {
     e.preventDefault();
     // You can implement form submission logic here (e.g., API calls)
@@ -21,7 +30,7 @@ const Page = () => {
             Admin Dashboard
           </h1>
           <img src="./logo.png" className="h-10 md:h-10 flex mx-auto bg-black rounded-full px-5" alt="logo"/>
-          <button className="text-white bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
+          <button onClick={()=> setLoginCredential("0")} className="text-white bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
             Logout
           </button>
         </nav>
@@ -105,7 +114,7 @@ const Page = () => {
         </section>
 
         <section className="md:flex md:justify-between mx-[5%] gap-x-5 space-y-5 pb-10">
-          <div className="bg-gray-500 py-10 text-center md:text-4xl space-y-3 rounded-xl w-full">
+          <div className="bg-gradient-to-r from-pink-600 to-blue-700 assigndiv py-10 text-center md:text-4xl space-y-3 rounded-xl w-full">
             <h1 className="font-semibold text-gray-950">
               Total Assigned Tasks
             </h1>
@@ -114,7 +123,8 @@ const Page = () => {
               Show Task
             </button>
           </div>
-          <div className="bg-gray-500  py-10 text-center md:text-4xl space-y-3 rounded-xl w-full">
+
+          <div className="bg-gradient-to-r from-yellow-600 to-orange-700 statusdiv  py-10 text-center md:text-4xl space-y-3 rounded-xl w-full">
             <h1 className="font-semibold text-gray-950">Task Status</h1>
 
             <button className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1">

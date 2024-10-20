@@ -1,10 +1,14 @@
-
-import React from "react";
+"use client"
+import useLogin from "@/store/login";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { MdCancelPresentation } from "react-icons/md";
 
-const page = () => {
- 
+const Page = () => {
+  const login = useLogin((state) => state.login);
+  const setLoginCredential = useLogin((state) => state.setLoginCredential);
+  const router = useRouter()
   const tasks = [
     {
       Assignby: "Rahul",
@@ -32,6 +36,11 @@ const page = () => {
       Description: "Implement a fulling time loader",
     },
   ];
+  useEffect(()=>{
+   if(login === "0")
+      router.push("/")
+
+  },[login])
   const handleSubmit = () => {};
   return (
     <>
@@ -41,7 +50,7 @@ const page = () => {
             Employee Dashboard
           </h1>
           <img src="./logo.png" className="h-10 md:h-10 flex mx-auto bg-black rounded-full px-5" alt="logo"/>
-          <button className="text-white  bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
+          <button onClick={()=>setLoginCredential("0")} className="text-white  bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
             Logout
           </button>
         </nav>
@@ -78,4 +87,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
