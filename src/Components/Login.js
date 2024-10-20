@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { FaEye, FaRegEyeSlash } from "react-icons/fa"; // Cleaner import
+import { FaEye, FaRegEyeSlash } from "react-icons/fa"; 
 
 const Login = () => {
   const router = useRouter();
