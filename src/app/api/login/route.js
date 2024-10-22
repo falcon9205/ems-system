@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/utils/dbConnect";
 import Admin from "@/Model/Signup_admin";
-import bcrypt, { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import Employee from "@/Model/Signup_employee";
 
 export async function GET(req) {
   await dbConnect();
-  const Users_Data = await Admin.find();
+  const Users_Data = await Employee.find();
   return NextResponse.json({ Users_Data });
 }
 
 export async function POST(req) {
+  
     try {
       await dbConnect();
       const body = await req.json();

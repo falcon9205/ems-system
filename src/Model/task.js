@@ -32,6 +32,6 @@ const TaskSchema =new mongoose.Schema({
 
 },{timestamps:true})
 
-const Employee  = mongoose.models.Employee || mongoose.model('Employee',EmployeeSchema);
+const Task  = mongoose.models.Task || mongoose.model('Task',TaskSchema);
 
-export default Employee
+export default Task

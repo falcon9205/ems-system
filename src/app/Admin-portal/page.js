@@ -2,26 +2,147 @@
 import useLogin from "@/store/login";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import "./admin.css"
+import { ToastContainer, toast, Slide } from "react-toastify"; // Added Slide import
+import "react-toastify/dist/ReactToastify.css"; // Make sure to import the CSS for the toast
+import { FaWindowClose } from "react-icons/fa";
+import { TiTick } from "react-icons/ti";
+import { IoMdClose } from "react-icons/io";
+
+import "./admin.css";
 const Page = () => {
-  const router= useRouter()
+  const router = useRouter();
   const [taskTitle, setTaskTitle] = useState("");
-  const [state, setState] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [deadline, setDeadline] = useState();
   const [description, setDescription] = useState("");
-  const login = useLogin((state) => state.login);
+  const [emp_Data, setEmp_Data] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
-  useEffect(()=>{
-    if(login === "0")
-      router.push("/")
-  },[login])
-  const handleSubmit = (e) => {
+  const login = useLogin((state) => state.login);
+  const user_id = useLogin((state) => state.user_id);
+  const [toggle, settoggle] = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [showPopup, setShowpopup] = useState(false);
+  const [showTaskpopup,setShowTaskPopup] = useState(false)
+  useEffect(() => {
+    if (login === "0") router.push("/");
+    console.log("variable data usersdata ", emp_Data);
+    const fetchTask = async () => {
+      try {
+        const res = await fetch("/api/task", {
+          method: "GET", // or GET if you're just fetching data
+          headers: {
+            "Content-Type": "application/json",
+          }, // Remove this if it's not needed for a GET request
+        });
+
+        const data = await res.json();
+        console.log("Fetched data:", data); // Log the fetched data
+        console.log("userid ", user_id);
+
+        // Map and set the employee data
+        setTasks(
+          data.All_Task.filter((user) => user.Assign_by === user_id) // Filter users based on the condition
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchTask();
+  }, [login, emp_Data, toggle]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // You can implement form submission logic here (e.g., API calls)
     console.log("Task Title:", taskTitle);
-    console.log("State:", state);
     console.log("Deadline:", deadline);
+    console.log("description", description);
+    console.log("Selected emp", selectedEmployee);
+    console.log("user_ID", user_id);
+
+    try {
+      if (!description || description.trim() === "") {
+        toast.error("Please Provide Description!", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+          transition: Slide, // Ensure the slide transition is working
+        });
+        // Stop form submission
+      } else {
+        const emp_id = emp_Data.find(
+          (emp) => emp.fullName === selectedEmployee
+        )?._id;
+        const task = {
+          Assign_by: user_id,
+          task_title: taskTitle,
+          deadline,
+          description,
+          emp_name: selectedEmployee,
+          emp_id,
+        };
+        const res = await fetch("/api/task", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(task),
+        });
+
+        const data = await res.json();
+        toast.success("Task Assigned !", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+          transition: Slide, // Ensure the slide transition is working
+        });
+
+        console.log("task Data:", data);
+        setTaskTitle("");
+        setDeadline("");
+        setDescription("");
+        settoggle(!toggle);
+      }
+    } catch (error) {}
   };
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      try {
+        const res = await fetch("/api/login", {
+          method: "GET", // or GET if you're just fetching data
+          headers: {
+            "Content-Type": "application/json",
+          }, // Remove this if it's not needed for a GET request
+        });
+
+        const data = await res.json();
+        console.log("Fetched data:", data); // Log the fetched data
+
+        // Map and set the employee data
+        setEmp_Data(
+          data.Users_Data.map((user) => ({
+            fullName: user.fullName,
+            _id: user._id,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchdata();
+  }, []);
+  useEffect(() => {
+    console.log("tasks fetched data", tasks);
+  }, [tasks]);
   return (
     <>
       <div className="bg-black h-full pt-1">
@@ -29,8 +150,15 @@ const Page = () => {
           <h1 className="text-white hidden md:block bg-yellow-600 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
             Admin Dashboard
           </h1>
-          <img src="./logo.png" className="h-10 md:h-10 flex mx-auto bg-black rounded-full px-5" alt="logo"/>
-          <button onClick={()=> setLoginCredential("0")} className="text-white bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
+          <img
+            src="./logo.png"
+            className="h-10 md:h-10 flex mx-auto bg-black rounded-full px-5"
+            alt="logo"
+          />
+          <button
+            onClick={() => setLoginCredential("0")}
+            className="text-white bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg"
+          >
             Logout
           </button>
         </nav>
@@ -40,18 +168,21 @@ const Page = () => {
             {/* Select State */}
             <div>
               <select
-                id="state"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
+                id="emp_name"
+                value={selectedEmployee}
+                onChange={(e) => setSelectedEmployee(e.target.value)}
                 className="w-full px-4 py-2 border text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="" disabled>
                   Select an Employee
                 </option>
-                <option value="todo">To-Do</option>
-                <option value="inprogress">In Progress</option>
-                <option value="completed">Completed</option>
+                {/* Dynamically generate options using map */}
+                {emp_Data.map((user) => (
+                  <option key={user._id} value={user.fullName}>
+                    {user.fullName}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -118,8 +249,11 @@ const Page = () => {
             <h1 className="font-semibold text-gray-950">
               Total Assigned Tasks
             </h1>
-            <h1 className="font-bold text-white">27</h1>
-            <button className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1">
+            <h1 className="font-bold text-white">{tasks.length}</h1>
+            <button
+              onClick={() => setShowpopup(true)}
+              className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1"
+            >
               Show Task
             </button>
           </div>
@@ -127,12 +261,108 @@ const Page = () => {
           <div className="bg-gradient-to-r from-yellow-600 to-orange-700 statusdiv  py-10 text-center md:text-4xl space-y-3 rounded-xl w-full">
             <h1 className="font-semibold text-gray-950">Task Status</h1>
 
-            <button className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1">
+            <button onClick={()=>setShowTaskPopup(true)} className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1">
               Show Status
             </button>
           </div>
         </section>
       </div>
+      
+      
+      {showPopup && (
+  <>
+    <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
+        {/* Popup Header with Close Button */}
+        <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
+          <h1 className="text-sm md:text-lg font-semibold">Task Assign</h1>
+          <FaWindowClose
+            className="md:text-xl text-gray-400 cursor-pointer"
+            onClick={() => setShowpopup(false)}
+          />
+        </div>
+        
+        {/* Scrollable Content */}
+        <div className="my-5 max-h-[70vh] overflow-y-auto px-4">
+          <table className="w-[95%] mx-auto">
+            <thead>
+              <tr>
+              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee ID</th>
+              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee Name</th>
+                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Task Title</th>
+                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Description</th>
+                
+                
+                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Deadline</th>
+              </tr>
+            </thead>
+            <tbody className="md:text-sm border">
+              {tasks.map((task) => (
+                <tr key={task._id}>
+                  <td className="border text-[7px] md:text-sm text-center">{task.emp_id}</td>
+                  <td className="border text-[7px] md:text-sm text-center">{task.emp_name}</td>
+                  <td className="border text-[7px] md:text-sm text-center">{task.task_title}</td>
+                  <td className="border text-[7px] md:text-sm text-center">{task.description}</td>
+                  
+                
+                  <td className="border text-[7px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </>
+)}
+      
+      {showTaskpopup && (
+  <>
+    <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
+        {/* Popup Header with Close Button */}
+        <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
+          <h1 className="text-sm md:text-lg font-semibold">Task Assign</h1>
+          <FaWindowClose
+            className="md:text-xl text-gray-400 cursor-pointer"
+            onClick={() => setShowTaskPopup(false)}
+          />
+        </div>
+        
+        {/* Scrollable Content */}
+        <div className="my-5 max-h-[70vh] overflow-y-auto px-4">
+          <table className="w-[95%] mx-auto">
+            <thead>
+              <tr>
+              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee ID</th>
+              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee Name</th>
+                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Task Title</th>
+                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Status</th>
+                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Deadline</th>
+              </tr>
+            </thead>
+            <tbody className="md:text-sm border">
+              {tasks.map((task) => (
+                <tr key={task._id}>
+                   <td className="border text-[7px] md:text-sm text-center">{task.emp_id}</td>
+                   <td className="border text-[7px] md:text-sm text-center">{task.emp_name}</td>
+                  <td className="border text-[7px] md:text-sm text-center">{task.task_title}</td>
+                  <td className="border text-[7px] md:text-sm text-center">{task.status ? <TiTick className="text-green-600 mx-auto" />: <IoMdClose className="text-red-600 mx-auto"/>}</td>
+                 
+                  
+                  <td className="border text-[7px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </>
+)}
+     
+
+      <ToastContainer />
     </>
   );
 };

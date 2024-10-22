@@ -1,7 +1,7 @@
 "use client"
 import useLogin from "@/store/login";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { MdCancelPresentation } from "react-icons/md";
 
@@ -9,33 +9,36 @@ const Page = () => {
   const login = useLogin((state) => state.login);
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
   const router = useRouter()
-  const tasks = [
-    {
-      Assignby: "Rahul",
-      TaskTile: "Loader",
-      Deadline: "23/10/2024",
-      Description:
-        "Implement a full-time loader Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets contain",
-    },
-    {
-      Assignby: "Prakash",
-      TaskTile: "Loader",
-      Deadline: "28/10/2024",
-      Description: "Implement a fulling time loader",
-    },
-    {
-      Assignby: "Rahul",
-      TaskTile: "Loader",
-      Deadline: "23/10/2024",
-      Description: "Implement a full-time loader",
-    },
-    {
-      Assignby: "Prakash",
-      TaskTile: "Loader",
-      Deadline: "28/10/2024",
-      Description: "Implement a fulling time loader",
-    },
-  ];
+  const [tasks,setTasks] = useState([])
+ 
+  useEffect(()=>{
+    const fetchTask = async()=>{
+      try {
+        const res = await fetch("/api/task", {
+          method: "GET", // or GET if you're just fetching data
+          headers: {
+            "Content-Type": "application/json",
+          } // Remove this if it's not needed for a GET request
+        });
+  
+        const data = await res.json();
+        console.log("Fetched data:", data); // Log the fetched data
+        console.log("userid ",user_id);
+        
+        // Map and set the employee data
+       setTasks(
+    data.All_Task
+      .filter((user) => user.emp_id === user_id) // Filter users based on the condition
+  );
+  
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+        
+      }
+      fetchTask()
+  })
   useEffect(()=>{
    if(login === "0")
       router.push("/")

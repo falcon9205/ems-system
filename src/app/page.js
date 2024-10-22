@@ -20,11 +20,13 @@ const Login = () => {
 
   const login = useLogin((state) => state.login);
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
-
+  const user_id= useLogin((state)=> state.user_id);
+  const set_User_id = useLogin((state)=>state.set_User_id)
   useEffect(() => {
-    console.log(login);
-    console.log(isLogin);
-  }, [login, isLogin]);
+    console.log("login status",login);
+    console.log("userid :",user_id);
+    
+  }, [login, isLogin,user_id]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -43,7 +45,7 @@ const Login = () => {
         const data = await res.json();
         
         if (res.ok) {
-          toast.success('🦄 Register Successful!', {
+          toast.success('Register Successful!', {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -94,10 +96,11 @@ const Login = () => {
         });
 
         const data = await res.json();
-        console.log("Login Data:", data);
-
+        console.log("Login Data:", data.user._id);
+        set_User_id(data.user._id)
+        
         if (res.ok) {
-          toast.success('🦄 Login Successful!', {
+          toast.success('Login Successful!', {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,

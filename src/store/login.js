@@ -5,6 +5,11 @@ const useLogin = create((set)=>({
     set(() => ({
       login: value,
     })),
+  user_id : "",
+  set_User_id: (value) =>
+    set(() => ({
+      user_id: value,
+    })), 
 }))
 
 // import { create } from "zustand";
