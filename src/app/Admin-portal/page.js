@@ -283,8 +283,8 @@ const Page = () => {
         </div>
         
         {/* Scrollable Content */}
-        <div className="my-5 max-h-[70vh] overflow-y-auto px-4">
-          <table className="w-[95%] mx-auto">
+        <div className="my-5 max-h-[70vh] overflow-y-auto px-1">
+          <table className="w-[100%] mx-auto">
             <thead>
               <tr>
               <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee ID</th>
@@ -299,13 +299,13 @@ const Page = () => {
             <tbody className="md:text-sm border">
               {tasks.map((task) => (
                 <tr key={task._id}>
-                  <td className="border text-[7px] md:text-sm text-center">{task.emp_id}</td>
-                  <td className="border text-[7px] md:text-sm text-center">{task.emp_name}</td>
-                  <td className="border text-[7px] md:text-sm text-center">{task.task_title}</td>
-                  <td className="border text-[7px] md:text-sm text-center">{task.description}</td>
+                  <td className="border text-[8px] md:text-sm text-center">{task.emp_id}</td>
+                  <td className="border text-[8px] md:text-sm text-center">{task.emp_name}</td>
+                  <td className="border text-[8px] md:text-sm text-center">{task.task_title}</td>
+                  <td className="border text-[8px] md:text-sm text-center">{task.description}</td>
                   
                 
-                  <td className="border text-[7px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
+                  <td className="border text-[8px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -331,7 +331,7 @@ const Page = () => {
         
         {/* Scrollable Content */}
         <div className="my-5 max-h-[70vh] overflow-y-auto px-4">
-          <table className="w-[95%] mx-auto">
+          <table className="w-[100%] mx-auto">
             <thead>
               <tr>
               <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee ID</th>
@@ -344,13 +344,13 @@ const Page = () => {
             <tbody className="md:text-sm border">
               {tasks.map((task) => (
                 <tr key={task._id}>
-                   <td className="border text-[7px] md:text-sm text-center">{task.emp_id}</td>
-                   <td className="border text-[7px] md:text-sm text-center">{task.emp_name}</td>
-                  <td className="border text-[7px] md:text-sm text-center">{task.task_title}</td>
-                  <td className="border text-[7px] md:text-sm text-center">{task.status ? <TiTick className="text-green-600 mx-auto" />: <IoMdClose className="text-red-600 mx-auto"/>}</td>
+                   <td className="border text-[8px] md:text-sm text-center">{task.emp_id}</td>
+                   <td className="border text-[8px] md:text-sm text-center">{task.emp_name}</td>
+                  <td className="border text-[8px] md:text-sm text-center">{task.task_title}</td>
+                  <td className="border text-[8px] md:text-sm text-center">{task.status ? <TiTick className="text-green-600 mx-auto" />: <IoMdClose className="text-red-600 mx-auto"/>}</td>
                  
                   
-                  <td className="border text-[7px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
+                  <td className="border text-[8px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

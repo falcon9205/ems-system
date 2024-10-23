@@ -8,6 +8,39 @@ export async function GET(req) {
   return NextResponse.json({ All_Task });
 }
 
+export async function PUT(req) {
+  console.log("Running PUT API");
+
+  try {
+    await dbConnect();
+
+    const body = await req.json();
+    console.log("databody",body);
+    
+    const { id, status } = body; // Extract taskId and status from request body
+    
+    // Find and update the task by ID
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { status } 
+    );
+
+    if (!updatedTask) {
+      return NextResponse.json({ success: false, message: "Task not found" }, { status: 404 });
+    }
+
+    console.log("Task updated successfully", updatedTask);
+    return NextResponse.json({ success: true, updatedTask }, { status: 200 });
+
+  } catch (error) {
+    console.log("Error updating task:", error);
+    return NextResponse.json(
+      { success: false, message: "Unable to update task" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req) {
   try {
     await dbConnect();
