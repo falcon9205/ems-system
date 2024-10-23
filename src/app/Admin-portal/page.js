@@ -146,7 +146,7 @@ const Page = () => {
   return (
     <>
       <div className="bg-black h-full pt-1">
-        <nav className="bg-teal-950 w-full h-14 rounded-full flex justify-between px-[2%] md:px-[1%]  items-center">
+        <nav className="bg-teal-950 w-[98%] md:w-[99%] mx-auto h-14 rounded-lg  flex justify-between px-[2%] md:px-[1%]  items-center">
           <h1 className="text-white hidden md:block bg-yellow-600 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
             Admin Dashboard
           </h1>
