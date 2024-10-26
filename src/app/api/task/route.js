@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/utils/dbConnect";
 import Task from "@/Model/task";
+import nodemailer from "nodemailer"
 
 export async function GET(req) {
   await dbConnect();
@@ -45,8 +46,8 @@ export async function POST(req) {
   try {
     await dbConnect();
     const body = await req.json();
-    const { Assign_by,task_title, deadline, description, emp_name, emp_id } = body;
-
+    const {email, Assign_by,task_title, deadline, description, emp_name, emp_id } = body;
+    console.log("Email from backend ",email)
     const tasks = new Task({
       Assign_by,
       task_title,
@@ -57,8 +58,34 @@ export async function POST(req) {
     });
     await tasks.save()
     console.log("Task data saved ");
+    
+    const sender = process.env.NEXT_PUBLIC_Nodemailder_Mail_id 
+    const sender_passkey = process.env.NEXT_PUBLIC_Nodemailder_Passkey
+    const transporter = nodemailer.createTransport({
+      service:'gmail',
+      secure : true,
+      port:465,
+      auth:{
+        user: sender,
+        pass: sender_passkey,
+      }
+    })
+    const mailoptions = {
+      from :sender,
+      to : email,
+      subject : "Task Assigned",
+      text : 'New task has been assigned to you pls check your EMS portal !'
+    }
+    try {
+       await transporter.sendMail(mailoptions);
+       console.log("Mail send successfully !")
+    } catch (error) {
+      console.log(error);
+      console.log("Error while sending the mail !")
+    }
     return NextResponse.json({tasks,success : true }, { status: 200 });
     
+
   } catch (error) {
     console.log(error);
     return NextResponse.json(

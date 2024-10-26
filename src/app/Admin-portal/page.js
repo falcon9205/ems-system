@@ -15,6 +15,7 @@ const Page = () => {
   const [deadline, setDeadline] = useState();
   const [description, setDescription] = useState("");
   const [emp_Data, setEmp_Data] = useState([]);
+  const [emp_Email, setEmp_Email] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
   const login = useLogin((state) => state.login);
@@ -22,7 +23,7 @@ const Page = () => {
   const [toggle, settoggle] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [showPopup, setShowpopup] = useState(false);
-  const [showTaskpopup,setShowTaskPopup] = useState(false)
+  const [showTaskpopup, setShowTaskPopup] = useState(false);
   useEffect(() => {
     if (login === "0") router.push("/");
     console.log("variable data usersdata ", emp_Data);
@@ -73,10 +74,21 @@ const Page = () => {
         });
         // Stop form submission
       } else {
-        const emp_id = emp_Data.find(
+        const selectedEmployeeData = emp_Data.find(
           (emp) => emp.fullName === selectedEmployee
-        )?._id;
+        );
+
+        // Retrieve emp_id and email if employee exists
+        const emp_id = selectedEmployeeData?._id;
+        const email = selectedEmployeeData?.email;
+
+        console.log("emp_id:", emp_id);
+        console.log("email:", email);
+
+        // const email = emp_Data.find(emp => emp.id === _id)?.email;
+
         const task = {
+          email,
           Assign_by: user_id,
           task_title: taskTitle,
           deadline,
@@ -131,6 +143,7 @@ const Page = () => {
           data.Users_Data.map((user) => ({
             fullName: user.fullName,
             _id: user._id,
+            email: user.email,
           }))
         );
       } catch (error) {
@@ -142,7 +155,9 @@ const Page = () => {
   }, []);
   useEffect(() => {
     console.log("tasks fetched data", tasks);
-  }, [tasks]);
+    console.log("Email of the emp", emp_Email);
+    console.log("dae", emp_Data);
+  }, [tasks, emp_Email]);
   return (
     <>
       <div className="bg-black h-full pt-1">
@@ -261,106 +276,152 @@ const Page = () => {
           <div className="bg-gradient-to-r from-yellow-600 to-orange-700 statusdiv  py-10 text-center md:text-4xl space-y-3 rounded-xl w-full">
             <h1 className="font-semibold text-gray-950">Task Status</h1>
 
-            <button onClick={()=>setShowTaskPopup(true)} className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1">
+            <button
+              onClick={() => setShowTaskPopup(true)}
+              className="text-sm bg-black text-white hover:text-gray-400 rounded-md px-2 py-1"
+            >
               Show Status
             </button>
           </div>
         </section>
       </div>
-      
-      
+
       {showPopup && (
-  <>
-    <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
-        {/* Popup Header with Close Button */}
-        <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
-          <h1 className="text-sm md:text-lg font-semibold">Task Assign</h1>
-          <FaWindowClose
-            className="md:text-xl text-gray-400 cursor-pointer"
-            onClick={() => setShowpopup(false)}
-          />
-        </div>
-        
-        {/* Scrollable Content */}
-        <div className="my-5 max-h-[70vh] overflow-y-auto px-1">
-          <table className="w-[100%] mx-auto">
-            <thead>
-              <tr>
-              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee ID</th>
-              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee Name</th>
-                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Task Title</th>
-                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Description</th>
-                
-                
-                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Deadline</th>
-              </tr>
-            </thead>
-            <tbody className="md:text-sm border">
-              {tasks.map((task) => (
-                <tr key={task._id}>
-                  <td className="border text-[8px] md:text-sm text-center">{task.emp_id}</td>
-                  <td className="border text-[8px] md:text-sm text-center">{task.emp_name}</td>
-                  <td className="border text-[8px] md:text-sm text-center">{task.task_title}</td>
-                  <td className="border text-[8px] md:text-sm text-center">{task.description}</td>
-                  
-                
-                  <td className="border text-[8px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </>
-)}
-      
+        <>
+          <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
+              {/* Popup Header with Close Button */}
+              <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
+                <h1 className="text-sm md:text-lg font-semibold">
+                  Task Assign
+                </h1>
+                <FaWindowClose
+                  className="md:text-xl text-gray-400 cursor-pointer"
+                  onClick={() => setShowpopup(false)}
+                />
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="my-5 max-h-[70vh] overflow-y-auto px-1">
+                <table className="w-[100%] mx-auto">
+                  <thead>
+                    <tr>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Employee ID
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Employee Name
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Task Title
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Description
+                      </th>
+
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Deadline
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="md:text-sm border">
+                    {tasks.map((task) => (
+                      <tr key={task._id}>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.emp_id}
+                        </td>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.emp_name}
+                        </td>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.task_title}
+                        </td>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.description}
+                        </td>
+
+                        <td className="border text-[8px] md:text-sm text-center text-red-500">
+                          {new Date(task.deadline).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {showTaskpopup && (
-  <>
-    <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
-        {/* Popup Header with Close Button */}
-        <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
-          <h1 className="text-sm md:text-lg font-semibold">Task Assign</h1>
-          <FaWindowClose
-            className="md:text-xl text-gray-400 cursor-pointer"
-            onClick={() => setShowTaskPopup(false)}
-          />
-        </div>
-        
-        {/* Scrollable Content */}
-        <div className="my-5 max-h-[70vh] overflow-y-auto px-4">
-          <table className="w-[100%] mx-auto">
-            <thead>
-              <tr>
-              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee ID</th>
-              <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Employee Name</th>
-                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Task Title</th>
-                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Status</th>
-                <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">Deadline</th>
-              </tr>
-            </thead>
-            <tbody className="md:text-sm border">
-              {tasks.map((task) => (
-                <tr key={task._id}>
-                   <td className="border text-[8px] md:text-sm text-center">{task.emp_id}</td>
-                   <td className="border text-[8px] md:text-sm text-center">{task.emp_name}</td>
-                  <td className="border text-[8px] md:text-sm text-center">{task.task_title}</td>
-                  <td className="border text-[8px] md:text-sm text-center">{task.status ? <TiTick className="text-green-600 mx-auto" />: <IoMdClose className="text-red-600 mx-auto"/>}</td>
-                 
-                  
-                  <td className="border text-[8px] md:text-sm text-center text-red-500">{new Date(task.deadline).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </>
-)}
-     
+        <>
+          <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
+              {/* Popup Header with Close Button */}
+              <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
+                <h1 className="text-sm md:text-lg font-semibold">
+                  Task Assign
+                </h1>
+                <FaWindowClose
+                  className="md:text-xl text-gray-400 cursor-pointer"
+                  onClick={() => setShowTaskPopup(false)}
+                />
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="my-5 max-h-[70vh] overflow-y-auto px-4">
+                <table className="w-[100%] mx-auto">
+                  <thead>
+                    <tr>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Employee ID
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Employee Name
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Task Title
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Status
+                      </th>
+                      <th className="text-[8px] md:text-sm border border-gray-300 text-center mx-2">
+                        Deadline
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="md:text-sm border">
+                    {tasks.map((task) => (
+                      <tr key={task._id}>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.emp_id}
+                        </td>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.emp_name}
+                        </td>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.task_title}
+                        </td>
+                        <td className="border text-[8px] md:text-sm text-center">
+                          {task.status ? (
+                            <TiTick className="text-green-600 mx-auto" />
+                          ) : (
+                            <IoMdClose className="text-red-600 mx-auto" />
+                          )}
+                        </td>
+
+                        <td className="border text-[8px] md:text-sm text-center text-red-500">
+                          {new Date(task.deadline).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       <ToastContainer />
     </>
