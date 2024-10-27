@@ -74,7 +74,7 @@ export async function POST(req) {
       from :sender,
       to : email,
       subject : "Task Assigned",
-      text : 'New task has been assigned to you pls check your EMS portal !'
+      text : `New task has been assigned to you pls check your EMS portal ! ${sender}`
     }
     try {
        await transporter.sendMail(mailoptions);
