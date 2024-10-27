@@ -104,22 +104,24 @@ const Page = () => {
 
   return (
     <>
-      <div className="bg-black h-full pt-1">
-        <nav className="bg-teal-950 w-[98%] md:w-[99%] mx-auto h-14 rounded-lg  flex justify-between px-[2%] md:px-[1%]  items-center">
-          <h1 className="text-white hidden md:block text-xs bg-yellow-600 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
-            Employee Dashboard
-          </h1>
+      <div className="bg-black h-full">
+      <nav className="bg-teal-950 w-[98%] mt-1 md:mt-0 rounded-md md:rounded-none md:w-[100%] mx-auto h-14   flex justify-between px-[2%] md:px-[1%]  items-center">
           <img
             src="./logo.png"
-            className="h-10 md:h-10 flex mx-auto bg-black rounded-full px-5"
+            className="h-10 md:h-10 flex  bg-black rounded-sm px-5"
             alt="logo"
           />
-          <button
-            onClick={() => setLoginCredential("0")}
-            className="text-white  bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg"
-          >
-            Logout
-          </button>
+          <div className="flex md:gap-x-4 gap-x-1">
+            <h1 className="text-white hidden md:block border-white bg-yellow-600 px-2  md:px-2 md:py-1 rounded-sm text-sm md:text-lg">
+              Employee Dashboard
+            </h1>
+            <button
+              onClick={() => setLoginCredential("0")}
+              className="text-white bg-red-600  hover:bg-red-700 px-2  md:px-2 md:py-1 rounded-sm text-xl md:text-lg"
+            >
+              Logout
+            </button>
+          </div>
         </nav>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3 mx-2 md:mx-10 py-5 md:py-10 gap-y-3">

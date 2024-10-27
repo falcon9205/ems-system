@@ -160,25 +160,27 @@ const Page = () => {
   }, [tasks, emp_Email]);
   return (
     <>
-      <div className="bg-black h-full pt-1">
-        <nav className="bg-teal-950 w-[98%] md:w-[99%] mx-auto h-14 rounded-lg  flex justify-between px-[2%] md:px-[1%]  items-center">
-          <h1 className="text-white hidden md:block bg-yellow-600 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg">
-            Admin Dashboard
-          </h1>
+      <div className="bg-black h-full ">
+        <nav className="bg-teal-950 w-[98%] mt-1 rounded-md md:w-[100%] mx-auto h-14   flex justify-between px-[2%] md:px-[1%]  items-center">
           <img
             src="./logo.png"
-            className="h-10 md:h-10 flex mx-auto bg-black rounded-full px-5"
+            className="h-10 md:h-10 flex  bg-black rounded-sm px-5"
             alt="logo"
           />
-          <button
-            onClick={() => setLoginCredential("0")}
-            className="text-white bg-red-600 hover:bg-red-700 px-2 py-2 md:px-2 md:py-1 rounded-full md:text-lg"
-          >
-            Logout
-          </button>
+          <div className="flex md:gap-x-4 gap-x-1">
+            <h1 className="text-white hidden md:block border-white bg-yellow-600 px-2  md:px-2 md:py-1 rounded-sm text-sm md:text-lg">
+              Admin Dashboard
+            </h1>
+            <button
+              onClick={() => setLoginCredential("0")}
+              className="text-white bg-red-600  hover:bg-red-700 px-2  md:px-2 md:py-1 rounded-sm text-xl md:text-lg"
+            >
+              Logout
+            </button>
+          </div>
         </nav>
 
-        <section className="md:flex w-full  justify-between py-10 px-[5%]">
+        <section className="md:flex w-full   justify-between py-10 px-[5%]">
           <form onSubmit={handleSubmit} className="space-y-6 md:w-1/2">
             {/* Select State */}
             <div>
