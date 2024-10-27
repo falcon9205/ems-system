@@ -69,7 +69,7 @@ const Page = () => {
         }
 
         // Web3form requires your form ID; replace 'YOUR_FORM_ID' with your actual ID
-        formData.append("access_key", process.env.NEXT_PUBLIC_web3form_key);
+        formData.append("access_key", process.env.NEXT_PUBLIC_web3form);
 
         try {
           const response = await fetch("https://api.web3forms.com/submit", {

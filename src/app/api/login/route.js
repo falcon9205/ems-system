@@ -29,7 +29,7 @@ export async function POST(req) {
             {
               id: user._id,
             },
-            process.env.NEXT_PUBLIC_Secret,
+            process.env.NEXT_PUBLIC_jwt,
             { expiresIn: "1h" }
           );
           console.log("token ", token);

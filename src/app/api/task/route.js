@@ -60,7 +60,7 @@ export async function POST(req) {
     console.log("Task data saved ");
     
     const sender = process.env.NEXT_PUBLIC_Nodemailder_Mail_id 
-    const sender_passkey = process.env.NEXT_PUBLIC_Nodemailder_Passkey
+    const sender_passkey = process.env.NEXT_PUBLIC_Nodemailder
     const transporter = nodemailer.createTransport({
       service:'gmail',
       secure : true,
