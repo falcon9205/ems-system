@@ -18,7 +18,7 @@ export async function POST(req) {
     const body = await req.json();
     const { email, password, isAdmin } = body;
     console.log(isAdmin);
-
+    
     if (isAdmin) {
       let user = await Admin.findOne({ email });
 

@@ -5,90 +5,102 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { FaEye, FaRegEyeSlash } from "react-icons/fa";
 import { ToastContainer, toast, Slide } from "react-toastify"; // Added Slide import
-import 'react-toastify/dist/ReactToastify.css'; // Make sure to import the CSS for the toast
+import "react-toastify/dist/ReactToastify.css"; // Make sure to import the CSS for the toast
+import { RxCross2 } from "react-icons/rx";
 
 const Login = () => {
   const router = useRouter();
+  const [showPopup, setShowPopup] = useState(false);
   const [fullName, setFullName] = useState("");
   const [designation, setDesignation] = useState("");
   const [email, setEmail] = useState("");
+  const [otp, setOTP] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
   const [loader, setLoader] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [auth,setAuth] = useState("")
   const login = useLogin((state) => state.login);
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
-  const user_id= useLogin((state)=> state.user_id);
-  const set_User_id = useLogin((state)=>state.set_User_id)
+  const user_id = useLogin((state) => state.user_id);
+  const set_User_id = useLogin((state) => state.set_User_id);
   useEffect(() => {
-    console.log("login status",login);
-    console.log("userid :",user_id);
-    
-  }, [login, isLogin,user_id]);
+    console.log("login status", login);
+    console.log("userid :", user_id);
+  }, [login, isLogin, user_id]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    console.log("handle submit called");
+    console.log(otp,auth);
     
-    setLoader(true);
-    if (isLogin) {
-      try {
-        const user = { fullName, designation, email, password, isAdmin };
-        const res = await fetch("/api/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(user),
-        });
-        const data = await res.json();
-        
-        if (res.ok) {
-          toast.success('Register Successful!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-            transition: Slide, // Ensure the slide transition is working
-          });
+    if (otp == auth) {
+      console.log("calling if");
+        try {
+          const user = { fullName, designation, email, password, isAdmin };
+          console.log(fullName,email,designation,password,isAdmin)
 
-          // if (!isAdmin) router.push("/Employee-portal");
-          // else router.push("/Admin-portal");
-
-          console.log("Signup complete", data);
-          setFullName("");
-          setDesignation("");
-          setEmail("");
-          setPassword("");
-          setIsLogin(false); // Set back to login mode after registration
-        } else {
-          console.error("Signup error:", data);
-          toast.success('🦄 Error signup Credentials!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-            transition: Slide, // Ensure the slide transition is working
+          const res = await fetch("/api/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
           });
+          const data = await res.json();
+
+          if (res.ok) {
+            toast.success("Register Successful!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "colored",
+              transition: Slide, // Ensure the slide transition is working
+            });
+
+            // if (!isAdmin) router.push("/Employee-portal");
+            // else router.push("/Admin-portal");
+            setShowPopup(false)
+            console.log("Signup complete", data);
+            setFullName("");
+            setDesignation("");
+            setEmail("");
+            setPassword("");
+            setIsLogin(false); // Set back to login mode after registration
+          } else {
+            console.error("Signup error:", data);
+            toast.success(" Error signup Credentials!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "colored",
+              transition: Slide, // Ensure the slide transition is working
+            });
+          }
+        } catch (error) {
+          console.error("Error during signup:", error);
+        } finally {
+          setLoader(false);
         }
-      } catch (error) {
-        console.error("Error during signup:", error);
-        
-      } finally {
-        setLoader(false);
-      }
-    } else {
+      
+    } 
+  };
+
+  const authLogin = async()=>{
+      
+      console.log("calling else");
       try {
         const user = { email, password, isAdmin };
+        console.log(user);
+        
         const res = await fetch("/api/login", {
           method: "POST",
           headers: {
@@ -99,10 +111,10 @@ const Login = () => {
 
         const data = await res.json();
         console.log("Login Data:", data.user._id);
-        set_User_id(data.user._id)
-        
+        set_User_id(data.user._id);
+
         if (res.ok) {
-          toast.success('Login Successful!', {
+          toast.success("Login Successful!", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -112,7 +124,7 @@ const Login = () => {
             theme: "colored",
             transition: Slide, // Ensure the slide transition is working
           });
-          setLoginCredential("1") 
+          setLoginCredential("1");
           if (!isAdmin) router.push("/Employee-portal");
           else router.push("/Admin-portal");
 
@@ -120,7 +132,7 @@ const Login = () => {
           setPassword("");
         } else {
           console.error("Login error:", data);
-          toast.success('🦄 Error Login Credentials!', {
+          toast.success("🦄 Error Login Credentials!", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -132,13 +144,44 @@ const Login = () => {
           });
         }
       } catch (error) {
-
         console.error("Error during Login:", error);
-        
       } finally {
         setLoader(false);
       }
+
     }
+  
+
+  const handleotp = async (e) => {
+    e.preventDefault();
+    
+    console.log("Running handle otp");
+    
+    if(!isLogin){
+       console.log("running login function");
+       authLogin()
+    }
+     else{
+      setShowPopup(true)
+      const authOTP = Math.floor(100000 + Math.random() * 900000);
+      setAuth(authOTP)
+    console.log("OTP verification in progress", authOTP, email);
+    const userdata = { authOTP, email };
+    const res = await fetch("/api/authenticate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userdata),
+    });
+    const data = await res.json();
+    console.log("data", data.success);
+    if (data.success) {
+    } else {
+    }
+  }
+
+    // Add any OTP verification logic here.
   };
 
   return (
@@ -162,7 +205,7 @@ const Login = () => {
 
           <form
             className="bg-teal-800 px-5 py-5 w-[90%] mx-auto rounded-xl"
-            onSubmit={handleSubmit}
+            onSubmit={handleotp}
           >
             {isLogin && (
               <>
@@ -252,6 +295,48 @@ const Login = () => {
           </form>
         </section>
       </div>
+
+      {showPopup && isLogin && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden">
+
+            <section className="w-full py-10 text-white md:w-[100%] h-full bg-teal-950">
+              
+              <div className="flex items-center justify-between mx-5">
+                <h1 className="text-xl">Verify Yourself</h1>
+                <RxCross2 onClick={() => setShowPopup(false)} />
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4 mt-10 mx-20">
+                <input
+                  type="number"
+                  name="otp"
+                  placeholder="Check your mail for 6-digit code"
+                  className="w-full px-3 py-2 border text-black border-gray-300 rounded-md"
+                  value={otp}
+                  onChange={(e) => setOTP(e.target.value.slice(0, 6))} // Limit input to 6 characters
+                  required
+                  maxLength={6}
+                />
+
+                <button
+                  type="submit"
+                  className={`w-full py-2 px-4 rounded-md text-white ${
+                    otp.length === 6
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                  disabled={otp.length < 6}
+                >
+                  Verify Otp
+                </button>
+              </form>
+            </section>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </>
   );

@@ -8,7 +8,6 @@ import { FaWindowClose } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { IoMdClose } from "react-icons/io";
 
-import "./admin.css";
 const Page = () => {
   const router = useRouter();
   const [taskTitle, setTaskTitle] = useState("");
@@ -24,32 +23,8 @@ const Page = () => {
   const [tasks, setTasks] = useState([]);
   const [showPopup, setShowpopup] = useState(false);
   const [showTaskpopup, setShowTaskPopup] = useState(false);
-  useEffect(() => {
-    if (login === "0") router.push("/");
-    console.log("variable data usersdata ", emp_Data);
-    const fetchTask = async () => {
-      try {
-        const res = await fetch("/api/task", {
-          method: "GET", // or GET if you're just fetching data
-          headers: {
-            "Content-Type": "application/json",
-          }, // Remove this if it's not needed for a GET request
-        });
 
-        const data = await res.json();
-        console.log("Fetched data:", data); // Log the fetched data
-        console.log("userid ", user_id);
-
-        // Map and set the employee data
-        setTasks(
-          data.All_Task.filter((user) => user.Assign_by === user_id) // Filter users based on the condition
-        );
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchTask();
-  }, [login, emp_Data, toggle]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,13 +92,47 @@ const Page = () => {
         });
 
         console.log("task Data:", data);
-        setTaskTitle("");
+        setTaskTitle(""); 
         setDeadline("");
         setDescription("");
+        fetchTask()
         settoggle(!toggle);
       }
     } catch (error) {}
   };
+
+  const fetchTask = async () => {
+    try {
+      
+      
+      const res = await fetch("/api/task", {
+        method: "GET", // or GET if you're just fetching data
+        headers: {
+          "Content-Type": "application/json",
+        }, // Remove this if it's not needed for a GET request
+      });
+
+      const data = await res.json();
+      console.log("Fetched datatask:", data); // Log the fetched data
+      console.log("userid ", user_id);
+
+      // Map and set the employee data
+      console.log("running fetch task again for fetching ...");
+      console.log("userid from fetch",user_id);
+      setTasks(
+        data.filter((user) => user.Assign_by === user_id) // Filter users based on the condition
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTask()
+    if (login === "0") router.push("/");
+    console.log("variable data usersdata ", emp_Data);
+   
+  }, [login, emp_Data, toggle]);
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -153,10 +162,12 @@ const Page = () => {
 
     fetchdata();
   }, []);
+
   useEffect(() => {
     console.log("tasks fetched data", tasks);
     console.log("Email of the emp", emp_Email);
     console.log("dae", emp_Data);
+    console.log("task length",tasks.length)
   }, [tasks, emp_Email]);
   return (
     <>
@@ -362,7 +373,7 @@ const Page = () => {
               {/* Popup Header with Close Button */}
               <div className="flex justify-between mx-4 mt-1 sticky top-0 bg-white z-10">
                 <h1 className="text-sm md:text-lg font-semibold">
-                  Task Assign
+                  Task Status
                 </h1>
                 <FaWindowClose
                   className="md:text-xl text-gray-400 cursor-pointer"

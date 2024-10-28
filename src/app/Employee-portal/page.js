@@ -22,12 +22,12 @@ const Page = () => {
 
       const data = await res.json();
 
-      console.log("Fetched data:", data.All_Task); // Log the fetched data
+      console.log("Fetched data:", data); // Log the fetched data
       console.log("userid ", user_id);
 
       // Map and set the employee data
       setTasks(
-        data.All_Task.filter(
+        data.filter(
           (user) => user.emp_id === user_id && user.status === false
         )
       );

@@ -4,9 +4,8 @@ import Task from "@/Model/task";
 import nodemailer from "nodemailer"
 
 export async function GET(req) {
-  await dbConnect();
-  const All_Task = await Task.find();
-  return NextResponse.json({ All_Task });
+  const data = await Task.find()
+  return NextResponse.json(data)
 }
 
 export async function PUT(req) {
