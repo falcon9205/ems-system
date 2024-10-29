@@ -308,7 +308,7 @@ const Login = () => {
                 <RxCross2 onClick={() => setShowPopup(false)} />
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 mt-10 mx-20">
+              <form onSubmit={handleSubmit} className="space-y-4 mt-10 mx-10 md:mx-20">
                 <input
                   type="number"
                   name="otp"
@@ -319,7 +319,7 @@ const Login = () => {
                   required
                   maxLength={6}
                 />
-
+                   <p className="text-[10px] text-center text-gray-400">If you haven&apos;t received it&sbquo; please check your spam folder.</p>
                 <button
                   type="submit"
                   className={`w-full py-2 px-4 rounded-md text-white ${
