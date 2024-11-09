@@ -4,12 +4,16 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Cookies from "js-cookie";
+
 const Page = () => {
   const login = useLogin((state) => state.login);
   const user_id = useLogin((state) => state.user_id);
+  const set_User_id = useLogin((state) => state.set_User_id);
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
   const router = useRouter();
   const [tasks, setTasks] = useState([]);
+  const [taskButton,setTaskButton] = useState("Done")
 
   const fetchTask = async () => {
     try {
@@ -38,6 +42,7 @@ const Page = () => {
   };
 
   const setstatus = async (id, status) => {
+    setTaskButton("Updating...")
     try {
       const details = tasks.find((task) => task._id === id);
       const res = await fetch("/api/task", {
@@ -50,6 +55,7 @@ const Page = () => {
 
       const data = await res.json();
       if (data.success) {
+       
         toast.success("Task Status Updated!", {
           position: "top-center",
           autoClose: 3000,
@@ -61,7 +67,7 @@ const Page = () => {
           transition: Slide, // Ensure the slide transition is working
         });
         // Fetch the latest tasks after successfully updating the task status
-
+        setTaskButton("Done")
         const formData = new FormData();
         // Add each field from your object to formData
         for (const key in details) {
@@ -96,11 +102,60 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {
-    if (login === "0") router.push("/");
-    console.log("tasks data", tasks);
-    fetchTask();
-  }, [login]);
+  useEffect(()=>{
+    const token = Cookies.get('token');
+    const id = Cookies.get('id')
+    const identity = Cookies.get('identity')
+    console.log(" cookies from frontend ", token,id,identity);
+    if(id && token && identity)
+    {
+      setLoginCredential("1");
+      set_User_id(id)
+      fetchTask()
+    }
+  },[login])
+
+  const logoutUser = async()=>{
+    console.log("Running logout function");
+    const res = await fetch("/api/logout", {
+      method: "GET", // or GET if you're just fetching data
+      headers: {
+        "Content-Type": "application/json",
+      }, // Remove this if it's not needed for a GET request
+    });
+
+    const data = await res.json();
+    console.log("data of cookies ");
+    if(data.success){
+      toast.success("Logout Successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        transition: Slide, // Ensure the slide transition is working
+      });
+        setLoginCredential("0")
+        set_User_id(null)
+    }
+    
+  }
+
+  useEffect(()=>{
+    if(login!=="0")
+    {
+      const identity = Cookies.get('identity')
+      if(identity == "Employee")
+        router.push("/Employee-portal")
+     
+    }
+    else{
+      router.push("/")
+    }
+  },[login])
+  
 
   return (
     <>
@@ -116,7 +171,7 @@ const Page = () => {
               Employee Dashboard
             </h1>
             <button
-              onClick={() => setLoginCredential("0")}
+              onClick={() => logoutUser()}
               className="text-white bg-red-600  hover:bg-red-700 px-2  md:px-2 md:py-1 rounded-sm text-xl md:text-lg"
             >
               Logout
@@ -149,7 +204,7 @@ const Page = () => {
                   onClick={() => setstatus(task._id, true)}
                   className="bg-green-500 text-xs md:text-sm text-white rounded-lg px-2 py-1"
                 >
-                  Done
+                  {taskButton}
                 </button>
                 <button className="bg-red-500 text-xs md:text-sm text-white rounded-lg px-2 py-1">
                   Not done

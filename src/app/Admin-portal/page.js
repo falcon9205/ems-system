@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css"; // Make sure to import the CSS f
 import { FaWindowClose } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { IoMdClose } from "react-icons/io";
+import Cookies from "js-cookie";
 
 const Page = () => {
   const router = useRouter();
@@ -15,25 +16,23 @@ const Page = () => {
   const [description, setDescription] = useState("");
   const [emp_Data, setEmp_Data] = useState([]);
   const [emp_Email, setEmp_Email] = useState("");
+  const [taskButton,setTaskButton] = useState("Assign Task")
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
+  const set_User_id = useLogin((state) => state.set_User_id);
   const login = useLogin((state) => state.login);
   const user_id = useLogin((state) => state.user_id);
+  
   const [toggle, settoggle] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [showPopup, setShowpopup] = useState(false);
   const [showTaskpopup, setShowTaskPopup] = useState(false);
-
   
+ 
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
-    // You can implement form submission logic here (e.g., API calls)
-    console.log("Task Title:", taskTitle);
-    console.log("Deadline:", deadline);
-    console.log("description", description);
-    console.log("Selected emp", selectedEmployee);
-    console.log("user_ID", user_id);
 
     try {
       if (!description || description.trim() === "") {
@@ -49,6 +48,7 @@ const Page = () => {
         });
         // Stop form submission
       } else {
+        setTaskButton("Assigning...")
         const selectedEmployeeData = emp_Data.find(
           (emp) => emp.fullName === selectedEmployee
         );
@@ -57,8 +57,6 @@ const Page = () => {
         const emp_id = selectedEmployeeData?._id;
         const email = selectedEmployeeData?.email;
 
-        console.log("emp_id:", emp_id);
-        console.log("email:", email);
 
         // const email = emp_Data.find(emp => emp.id === _id)?.email;
 
@@ -91,7 +89,7 @@ const Page = () => {
           transition: Slide, // Ensure the slide transition is working
         });
 
-        console.log("task Data:", data);
+        setTaskButton("Assign Task")
         setTaskTitle(""); 
         setDeadline("");
         setDescription("");
@@ -127,12 +125,33 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTask()
-    if (login === "0") router.push("/");
-    console.log("variable data usersdata ", emp_Data);
-   
-  }, [login, emp_Data, toggle]);
+  const logoutUser = async()=>{
+    console.log("Running logout function");
+    const res = await fetch("/api/logout", {
+      method: "GET", // or GET if you're just fetching data
+      headers: {
+        "Content-Type": "application/json",
+      }, // Remove this if it's not needed for a GET request
+    });
+
+    const data = await res.json();
+    console.log("data of cookies ");
+    if(data.success){
+      toast.success("Logout Successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        transition: Slide, // Ensure the slide transition is working
+      });
+        setLoginCredential("0")
+        set_User_id(null)
+    }
+    
+  }
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -163,12 +182,38 @@ const Page = () => {
     fetchdata();
   }, []);
 
-  useEffect(() => {
-    console.log("tasks fetched data", tasks);
-    console.log("Email of the emp", emp_Email);
-    console.log("dae", emp_Data);
-    console.log("task length",tasks.length)
-  }, [tasks, emp_Email]);
+  useEffect(()=>{
+    console.log("Login status",login);
+    
+    if(login!=="0")
+    {
+      const identity = Cookies.get('identity')
+      if(identity == "Admin")
+        router.push("/Admin-portal")
+      
+    }
+    else{
+      router.push("/")
+    }
+  },[login])
+  
+  useEffect(()=>{
+    const token = Cookies.get('token');
+    const id = Cookies.get('id')
+    const identity = Cookies.get('identity')
+    console.log(" cookies from frontend ", token,id,identity);
+    if(id && token && identity)
+    {
+      setLoginCredential("1");
+      set_User_id(id)
+      fetchTask()
+    }
+
+    if (login === "0"){
+      router.push("/");
+    }
+    
+  },[login, emp_Data, toggle])
   return (
     <>
       <div className="bg-black h-full ">
@@ -179,11 +224,11 @@ const Page = () => {
             alt="logo"
           />
           <div className="flex md:gap-x-4 gap-x-1">
-            <h1 className="text-white hidden md:block border-white bg-yellow-600 px-2  md:px-2 md:py-1 rounded-sm text-sm md:text-lg">
+            <h1 className="text-white hidden md:block border-white  px-2  md:px-2 md:py-1 rounded-sm text-sm md:text-lg">
               Admin Dashboard
             </h1>
             <button
-              onClick={() => setLoginCredential("0")}
+              onClick={() => logoutUser()}
               className="text-white bg-red-600  hover:bg-red-700 px-2  md:px-2 md:py-1 rounded-sm text-xl md:text-lg"
             >
               Logout
@@ -257,7 +302,7 @@ const Page = () => {
               type="submit"
               className="w-full bg-teal-800 hover:bg-teal-900 text-white py-2 rounded-lg"
             >
-              Create Task
+              {taskButton}
             </button>
           </form>
           <div className="w-[30%] hidden md:block">

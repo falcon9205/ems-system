@@ -4,7 +4,6 @@ import Admin from "@/Model/Signup_admin";
 import bcrypt from "bcryptjs";
 import Employee from "@/Model/Signup_employee";
 import jwt from "jsonwebtoken";
-import useLogin from "@/store/login";
 
 export async function GET(req) {
   await dbConnect();
@@ -12,78 +11,96 @@ export async function GET(req) {
   return NextResponse.json({ Users_Data });
 }
 
+
 export async function POST(req) {
   try {
     await dbConnect();
     const body = await req.json();
     const { email, password, isAdmin } = body;
-    console.log(isAdmin);
-    
+    var identity;
     if (isAdmin) {
-      let user = await Admin.findOne({ email });
-
+      const user = await Admin.findOne({ email });
       if (user) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
+          identity = "Admin"
           const token = jwt.sign(
-            {
-              id: user._id,
-            },
+            { id: user._id },
             process.env.NEXT_PUBLIC_jwt,
             { expiresIn: "1h" }
           );
-          console.log("token ", token);
+          console.log("token & id", token, user._id);
 
-          // const response = NextResponse.json(
-          //   { message: "user found" },
-          //   { status: 200 }
-          // );
-          // response.cookies.set("token", token, {
-          //   httpOnly: true,
-          // });
-
-          // return response;
-
-          return NextResponse.json(
-            {
-              success: true,
-              message: "Admin login successful",
-              user,
-            },
+          const response = NextResponse.json(
+            { message: "User Found", user },
             { status: 200 }
           );
-        } else {
+
+          // Set the token cookie
+          response.headers.append(
+            "Set-Cookie",
+            `token=${token}; Path=/;  Max-Age=10000`
+          );
+
+          // Set the user ID cookie
+          response.headers.append(
+            "Set-Cookie",
+            `id=${user._id}; Path=/;  Max-Age=10000`
+          );
+          response.headers.append(
+            "Set-Cookie",
+            `identity=${identity}; Path=/;  Max-Age=10000`
+          )
+          
+          return response;
+        }
+         else {
           return NextResponse.json(
-            {
-              success: false,
-              message: "Admin credential error",
-            },
+            { success: false, message: "Admin credential error" },
             { status: 401 }
           );
         }
       }
     } else if (!isAdmin) {
-      console.log("running file");
-
-      let user = await Employee.findOne({ email });
-
+      const user = await Employee.findOne({ email });
       if (user) {
+         
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-          return NextResponse.json(
-            {
-              success: true,
-              message: "Employee login successful",
-              user,
-            },
+          identity = "Employee"
+          const token = jwt.sign(
+            { id: user._id },
+            process.env.NEXT_PUBLIC_jwt,
+            { expiresIn: "1h" }
+          );
+          console.log("token & id", token, user._id);
+
+          const response = NextResponse.json(
+            { message: "User Found", user },
             { status: 200 }
           );
+
+          // Set the token cookie
+          response.headers.append(
+            "Set-Cookie",
+            `token=${token}; Path=/;  Max-Age=10000`
+          );
+
+          // Set the user ID cookie
+          response.headers.append(
+            "Set-Cookie",
+            `id=${user._id}; Path=/;  Max-Age=10000`
+          );
+
+          response.headers.append(
+            "Set-Cookie",
+            `identity=${identity}; Path=/;  Max-Age=10000`
+          );
+
+          return response;
         } else {
           return NextResponse.json(
-            {
-              success: false,
-              message: "Employee credential error",
-            },
+            { success: false, message: "Employee credential error" },
             { status: 401 }
           );
         }
@@ -91,19 +108,13 @@ export async function POST(req) {
     }
 
     return NextResponse.json(
-      {
-        success: false,
-        message: "Username or password is incorrect",
-      },
+      { success: false, message: "Username or password is incorrect" },
       { status: 401 }
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return NextResponse.json(
-      {
-        success: false,
-        message: "Login unsuccessful due to server error",
-      },
+      { success: false, message: "Login unsuccessful due to server error" },
       { status: 500 }
     );
   }

@@ -25,10 +25,7 @@ const Login = () => {
   const setLoginCredential = useLogin((state) => state.setLoginCredential);
   const user_id = useLogin((state) => state.user_id);
   const set_User_id = useLogin((state) => state.set_User_id);
-  useEffect(() => {
-    console.log("login status", login);
-    console.log("userid :", user_id);
-  }, [login, isLogin, user_id]);
+ 
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -96,10 +93,10 @@ const Login = () => {
 
   const authLogin = async()=>{
       
-      console.log("calling else");
+      
       try {
         const user = { email, password, isAdmin };
-        console.log(user);
+       
         
         const res = await fetch("/api/login", {
           method: "POST",
@@ -110,8 +107,7 @@ const Login = () => {
         });
 
         const data = await res.json();
-        console.log("Login Data:", data.user._id);
-        set_User_id(data.user._id);
+        
 
         if (res.ok) {
           toast.success("Login Successful!", {
@@ -124,6 +120,9 @@ const Login = () => {
             theme: "colored",
             transition: Slide, // Ensure the slide transition is working
           });
+          
+          set_User_id(data.user._id);
+          console.log("data",data);
           setLoginCredential("1");
           if (!isAdmin) router.push("/Employee-portal");
           else router.push("/Admin-portal");
@@ -131,8 +130,8 @@ const Login = () => {
           setEmail("");
           setPassword("");
         } else {
-          console.error("Login error:", data);
-          toast.success("🦄 Error Login Credentials!", {
+         
+          toast.error("Error Login Credentials!", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -155,10 +154,9 @@ const Login = () => {
   const handleotp = async (e) => {
     e.preventDefault();
     
-    console.log("Running handle otp");
+    
     
     if(!isLogin){
-       console.log("running login function");
        authLogin()
     }
      else{
