@@ -139,8 +139,7 @@ const Page = () => {
       });
         setLoginCredential("0")
         set_User_id(null)
-        console.log("Done logout");
-        
+        console.log("Done logout");   
     }
     
   }
