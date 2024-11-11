@@ -2,13 +2,12 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     console.log("Running backend of logout");
-
     const response = NextResponse.json(
       { success: true },
       { status: 200 }
     );
-
-    // Set the token cookie with an empty value and secure flags
+    try {
+       // Set the token cookie with an empty value and secure flags
     response.headers.append(
       "Set-Cookie",
       `token=; Path=/; Max-Age=0; SameSite=None; Secure`
@@ -27,4 +26,11 @@ export async function GET() {
     );
 
     return response;
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({message : "Error Occured"})
+    }
+   
+
+   
 }

@@ -110,6 +110,7 @@ const Login = () => {
         
 
         if (res.ok) {
+          console.log("Cookie created!");
           toast.success("Login Successful!", {
             position: "top-center",
             autoClose: 5000,

@@ -51,7 +51,7 @@ export async function POST(req) {
             "Set-Cookie",
             `identity=${identity}; Path=/;  Max-Age=10000`
           )
-          console.log("Cookie created!");
+         
           return response;
         }
          else {
