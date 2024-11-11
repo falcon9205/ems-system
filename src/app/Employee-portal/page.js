@@ -116,7 +116,7 @@ const Page = () => {
   },[login])
 
   const logoutUser = async()=>{
-    
+    console.log("Running logout function");
     const res = await fetch("/api/logout", {
       method: "GET", // or GET if you're just fetching data
       headers: {
@@ -125,13 +125,10 @@ const Page = () => {
     });
 
     const data = await res.json();
-
-   
+  
     if(data.success){
       setLoginCredential("0")
-      set_User_id(null)
-      console.log("Done logout"); 
-      
+        set_User_id(null)
       toast.success("Logout Successfully!", {
         position: "top-center",
         autoClose: 3000,
@@ -142,11 +139,12 @@ const Page = () => {
         theme: "colored",
         transition: Slide, // Ensure the slide transition is working
       });
-         
+        setLoginCredential("0")
+        set_User_id(null)
     }
     
   }
-
+  
   useEffect(()=>{
     if(login!=="0")
     {
