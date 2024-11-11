@@ -6,7 +6,7 @@ export async function GET() {
       { success: true },
       { status: 200 }
     );
-    try {
+ 
        // Set the token cookie with an empty value and secure flags
     response.headers.append(
       "Set-Cookie",
@@ -26,10 +26,7 @@ export async function GET() {
     );
 
     return response;
-    } catch (error) {
-        console.log(error);
-        return NextResponse.json({message : "Error Occured"})
-    }
+    
    
 
    

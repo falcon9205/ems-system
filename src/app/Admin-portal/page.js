@@ -135,10 +135,8 @@ const Page = () => {
     });
 
     const data = await res.json();
-  
+    console.log("data of cookies ");
     if(data.success){
-      setLoginCredential("0")
-        set_User_id(null)
       toast.success("Logout Successfully!", {
         position: "top-center",
         autoClose: 3000,
