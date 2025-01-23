@@ -219,8 +219,8 @@ const Page = () => {
       <div className="bg-black h-full ">
         <nav className="bg-teal-950 w-[98%] mt-1 rounded-md md:w-[100%] mx-auto h-14   flex justify-between px-[2%] md:px-[1%]  items-center">
           <img
-            src="./logo.jpg"
-            className="h-10 md:h-10 flex  bg-white rounded-sm p-1"
+            src="./logo.png"
+            className="h-10 md:h-10 flex  rounded-full p-1"
             alt="logo"
           />
           <div className="flex md:gap-x-4 gap-x-1">

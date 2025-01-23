@@ -151,7 +151,11 @@ const Page = () => {
     <>
       <div className="bg-black h-full">
         <nav className="bg-teal-950 w-[98%] mt-1 md:mt-0 rounded-md md:rounded-none md:w-[100%] mx-auto h-14 flex justify-between px-[2%] md:px-[1%] items-center">
-          <img src="./logo.jpg" className="h-10 md:h-10 bg-white rounded-sm p-1" alt="logo" />
+        <img
+            src="./logo.png"
+            className="h-10 md:h-10 flex  rounded-full p-1"
+            alt="logo"
+          />
           <div className="flex md:gap-x-4 gap-x-1">
             <h1 className="text-white hidden md:block border-white bg-yellow-600 px-2 md:px-2 md:py-1 rounded-sm text-sm md:text-lg">
               Employee Dashboard
