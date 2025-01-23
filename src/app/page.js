@@ -202,8 +202,8 @@ const Login = () => {
       <div className="bg-black h-screen flex items-center justify-center">
         <section className="w-[95%] md:w-1/2 space-y-5 bg-teal-950 py-5 md:h-[80%] rounded-xl">
           <img
-            src="/logo.jpg"
-            className="h-16 mx-auto rounded-sm p-1 bg-white"
+            src="/logo.png"
+            className="h-16 mx-auto rounded-full p-1 "
             alt="logo"
           />
           <p className="text-center text-gray-300 text-sm">
