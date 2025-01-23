@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.ilearningscareer.com/
+
+# Sitemaps
+Sitemap: https://www.ilearningscareer.com/sitemap.xml
